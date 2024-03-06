@@ -1,0 +1,101 @@
+{
+	"env": {
+		"browser": true,
+		"es2021": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:react-hooks/recommended",
+		"prettier"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 12,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint",
+		"import",
+		"prettier",
+		"react",
+		"react-hooks",
+		"sort-destructure-keys"
+	],
+	"rules": {
+		"@typescript-eslint/no-unused-vars": ["error", {
+			"vars": "all",
+			"args": "after-used",
+			"ignoreRestSiblings": true,
+			"argsIgnorePattern": "^_"
+		}],
+		"@typescript-eslint/member-ordering": ["error", {
+			"default": {
+				"order": "alphabetically"
+			}
+		}],
+		"@typescript-eslint/no-var-requires": 0,
+		"@typescript-eslint/no-explicit-any": "off",
+		"arrow-body-style": ["error", "as-needed"],
+		"import/order": [
+			"error",
+			{
+				"groups": [["builtin", "external"], ["parent", "sibling"], "index", "object", "type"],
+				"pathGroups": [
+					{
+						"pattern": "@/**",
+						"group": "parent"
+					}
+				],
+				"pathGroupsExcludedImportTypes": ["builtin"],
+				"newlines-between": "always",
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				}
+			}
+		],
+		"no-use-before-define": [
+			"error",
+			{
+				"functions": false,
+				"classes": true
+			}
+		],
+		"no-var": "error",
+		"prefer-const": "error",
+		"prettier/prettier": "error",
+		"react/jsx-sort-props": ["error", {
+			"ignoreCase": true,
+			"callbacksLast": true,
+			"shorthandFirst": false,
+			"shorthandLast": false,
+			"noSortAlphabetically": false,
+			"reservedFirst": true
+		}],
+		"react/jsx-uses-react": "off",
+		"react/jsx-uses-vars": "error",
+		"react-hooks/rules-of-hooks": "error",
+		"react-hooks/exhaustive-deps": "warn",
+		"react/react-in-jsx-scope": "off",
+		"react/self-closing-comp": [
+			"error",
+			{
+				"component": true,
+				"html": true
+			}
+		],
+		"sort-destructure-keys/sort-destructure-keys": ["error", {
+			"caseSensitive": false
+		}]
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	}
+}
