@@ -1,0 +1,60 @@
+{
+	"env": {
+		"node": true,
+		"es6": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:import/errors",
+		"plugin:import/warnings",
+		"plugin:import/typescript",
+		"prettier"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2020,
+		"sourceType": "module",
+		"project": "./tsconfig.json"
+	},
+	"plugins": [
+		"@typescript-eslint",
+		"import",
+		"prettier"
+	],
+	"rules": {
+		"no-console": "warn",
+		"no-unused-vars": "off", // Disable the base rule as we use the TypeScript-specific one
+		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+		"@typescript-eslint/no-var-requires": "off",
+		"prettier/prettier": ["error", {
+			"endOfLine": "auto"
+		}],
+		"import/no-unresolved": "error",
+		"import/named": "error",
+		"import/namespace": "error",
+		"import/default": "error",
+		"import/export": "error",
+		"no-process-exit": "warn",
+		"no-undef": "error",
+		"no-redeclare": "error",
+		"no-trailing-spaces": "error",
+		"no-unexpected-multiline": "error",
+		"no-var": "error",
+		"prefer-const": ["error", {
+			"destructuring": "any",
+			"ignoreReadBeforeAssign": false
+		}],
+		"eqeqeq": ["error", "smart"],
+		"curly": ["error", "multi-line"],
+		"brace-style": ["error", "1tbs", { "allowSingleLine": true }]
+	},
+	"settings": {
+		"import/resolver": {
+			"typescript": {
+				"alwaysTryTypes": true,
+				"project": "./tsconfig.json"
+			}
+		}
+	}
+}
