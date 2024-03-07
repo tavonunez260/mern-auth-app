@@ -38,8 +38,7 @@
 				"order": "alphabetically"
 			}
 		}],
-		"@typescript-eslint/no-var-requires": 0,
-		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-var-requires": "off",
 		"arrow-body-style": ["error", "as-needed"],
 		"import/order": [
 			"error",
@@ -67,7 +66,10 @@
 			}
 		],
 		"no-var": "error",
-		"prefer-const": "error",
+		"prefer-const": ["error", {
+			"destructuring": "any",
+			"ignoreReadBeforeAssign": false
+		}],
 		"prettier/prettier": "error",
 		"react/jsx-sort-props": ["error", {
 			"ignoreCase": true,

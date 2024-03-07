@@ -23,13 +23,22 @@
 		"prettier"
 	],
 	"rules": {
-		"no-console": "warn",
-		"no-unused-vars": "off",
-		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-		"@typescript-eslint/no-var-requires": "off",
-		"prettier/prettier": ["error", {
-			"endOfLine": "auto"
+
+		"@typescript-eslint/no-unused-vars": ["error", {
+			"vars": "all",
+			"args": "after-used",
+			"ignoreRestSiblings": true,
+			"argsIgnorePattern": "^_"
 		}],
+		"@typescript-eslint/no-var-requires": "off",
+		"@typescript-eslint/member-ordering": ["error", {
+			"default": {
+				"order": "alphabetically"
+			}
+		}],
+		"brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+		"curly": ["error", "multi-line"],
+		"eqeqeq": ["error", "smart"],
 		"import/no-unresolved": "error",
 		"import/named": "error",
 		"import/namespace": "error",
@@ -53,19 +62,28 @@
 				}
 			}
 		],
-		"no-process-exit": "warn",
-		"no-undef": "error",
-		"no-redeclare": "error",
-		"no-trailing-spaces": "error",
-		"no-unexpected-multiline": "error",
-		"no-var": "error",
 		"prefer-const": ["error", {
 			"destructuring": "any",
 			"ignoreReadBeforeAssign": false
 		}],
-		"eqeqeq": ["error", "smart"],
-		"curly": ["error", "multi-line"],
-		"brace-style": ["error", "1tbs", { "allowSingleLine": true }]
+		"prettier/prettier": ["error", {
+			"endOfLine": "auto"
+		}],
+		"no-console": "warn",
+		"no-process-exit": "warn",
+		"no-redeclare": "error",
+		"no-trailing-spaces": "error",
+		"no-undef": "error",
+		"no-unexpected-multiline": "error",
+		"no-unused-vars": "off",
+		"no-use-before-define": [
+			"error",
+			{
+				"functions": false,
+				"classes": true
+			}
+		],
+		"no-var": "error"
 	},
 	"settings": {
 		"import/resolver": {
