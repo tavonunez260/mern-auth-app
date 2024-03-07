@@ -41,7 +41,7 @@
 				"groups": [["builtin", "external"], ["parent", "sibling"], "index", "object", "type"],
 				"pathGroups": [
 					{
-						"pattern": "@/**",
+						"pattern": "/**",
 						"group": "parent"
 					}
 				],
