@@ -1,6 +1,8 @@
+import { config } from 'dotenv';
 import express, { Express } from 'express';
 import mongoose from 'mongoose';
-import { config } from 'dotenv';
+
+import { userRouter } from './routes';
 
 config();
 const app: Express = express();
@@ -10,8 +12,6 @@ mongoose
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(() => console.log('Error'));
 
-app.get('/', (req, res) => {
-	res.send('Hello world');
-});
+app.use('/api/user', userRouter);
 
 app.listen(4000);

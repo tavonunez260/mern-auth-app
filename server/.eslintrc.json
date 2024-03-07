@@ -24,7 +24,7 @@
 	],
 	"rules": {
 		"no-console": "warn",
-		"no-unused-vars": "off", // Disable the base rule as we use the TypeScript-specific one
+		"no-unused-vars": "off",
 		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
 		"@typescript-eslint/no-var-requires": "off",
 		"prettier/prettier": ["error", {
@@ -35,6 +35,24 @@
 		"import/namespace": "error",
 		"import/default": "error",
 		"import/export": "error",
+		"import/order": [
+			"error",
+			{
+				"groups": [["builtin", "external"], ["parent", "sibling"], "index", "object", "type"],
+				"pathGroups": [
+					{
+						"pattern": "@/**",
+						"group": "parent"
+					}
+				],
+				"pathGroupsExcludedImportTypes": ["builtin"],
+				"newlines-between": "always",
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				}
+			}
+		],
 		"no-process-exit": "warn",
 		"no-undef": "error",
 		"no-redeclare": "error",
