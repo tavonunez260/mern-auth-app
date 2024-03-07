@@ -5,3 +5,10 @@ export const createHttpError = (statusCode: number, message: string): HttpError 
 	error.statusCode = statusCode;
 	return error;
 };
+
+export const beautifyError = (message: string) => {
+	if (message.includes('11000')) {
+		return 'User already exists';
+	}
+	return message;
+};
