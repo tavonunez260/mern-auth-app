@@ -15,6 +15,10 @@ mongoose
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(() => console.log('Error'));
 app.use(json());
+
+app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 	const statusCode = err.statusCode ?? 500;
@@ -22,12 +26,8 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 
 	return res.status(statusCode).json({
 		success: false,
-		message: beautifyError(message),
-		statusCode
+		message: beautifyError(message)
 	});
 });
-
-app.use('/api/user', userRouter);
-app.use('/api/auth', authRouter);
 
 app.listen(4000);

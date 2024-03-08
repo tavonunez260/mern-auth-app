@@ -10,7 +10,8 @@
       "@components/*": ["components/*"],
       "@pages/*": ["pages/*"],
       "@utils/*": ["utils/*"],
-      "@routes/*": ["routes/*"]
+      "@routes/*": ["routes/*"],
+      "@store/*": ["store/*"]
     },
 
     /* Bundler mode */

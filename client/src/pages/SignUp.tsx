@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { SignUpForm } from 'types';
+import { AppError, SignUpForm } from 'types';
 import { rules } from 'utils';
 
 export function SignUp() {
@@ -24,17 +24,18 @@ export function SignUp() {
 				'Content-Type': 'application/json'
 			}
 		})
-			.then(response => response.json())
-			.then(data => {
-				if (!data.success) {
-					setError(data.message);
-					reset();
-				} else {
-					navigate('/sign-in');
+			.then(response => {
+				if (!response.ok) {
+					return response.json().then(err => Promise.reject(err));
 				}
+				return response.json();
 			})
-			.catch(() => setError('An unexpected error occurred'))
-			.finally(() => {
+			.then(() => {
+				navigate('/sign-in');
+			})
+			.catch((error: AppError) => {
+				reset();
+				setError(error.message);
 				setLoading(false);
 			});
 	};

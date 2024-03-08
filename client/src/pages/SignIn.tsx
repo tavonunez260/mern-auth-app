@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { SignInForm } from 'types';
+import { signInFailure, signInStart, signInSuccess, useDispatch, useSelector } from 'store';
+import { AppError, SignInForm, User } from 'types';
 import { rules } from 'utils';
 
 export function SignIn() {
@@ -11,31 +11,33 @@ export function SignIn() {
 		register,
 		reset
 	} = useForm<SignInForm>();
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
+	const { error, loading } = useSelector(state => state.user);
+	const dispatch = useDispatch();
 
 	const onSubmit = async (requestData: SignInForm) => {
-		setLoading(true);
+		dispatch(signInStart());
 		fetch(`/api/auth/signin`, {
 			body: JSON.stringify(requestData),
 			method: 'POST',
 			headers: {
+				Accept: 'application/json',
 				'Content-Type': 'application/json'
 			}
 		})
-			.then(response => response.json())
-			.then(data => {
-				if (!data.success) {
-					setError(data.message);
-					reset();
-				} else {
-					navigate('/');
+			.then(response => {
+				if (!response.ok) {
+					return response.json().then(err => Promise.reject(err));
 				}
+				return response.json();
 			})
-			.catch(() => setError('An unexpected error occurred'))
-			.finally(() => {
-				setLoading(false);
+			.then((data: User) => {
+				dispatch(signInSuccess(data));
+				navigate('/');
+			})
+			.catch((error: AppError) => {
+				reset();
+				dispatch(signInFailure(error.message));
 			});
 	};
 
@@ -55,15 +57,12 @@ export function SignIn() {
 				</div>
 				<div className="flex flex-col">
 					<input
-						{...register('password', rules.password)}
+						{...register('password')}
 						className="bg-slate-100 p-3 rounded-lg border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 outline-none"
 						id="password"
 						placeholder="Password"
 						type="password"
 					/>
-					{errors.password && (
-						<p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-					)}
 				</div>
 				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				<button

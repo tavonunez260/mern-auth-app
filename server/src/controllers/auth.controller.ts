@@ -1,4 +1,4 @@
-import { compare, genSalt, hash } from 'bcryptjs';
+import { compareSync, genSalt, hash } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import { sign } from 'jsonwebtoken';
 
@@ -12,9 +12,9 @@ export const signUpController = async (req: Request, res: Response, next: NextFu
 	const newUser = new User({ username, email, password: hashedPassword });
 	try {
 		await newUser.save();
-		res.status(201).json({ success: true, message: 'User created successfully' });
-	} catch (e) {
-		next(e);
+		res.status(201).json({ message: 'User created successfully' });
+	} catch (error) {
+		next(error);
 	}
 };
 
@@ -26,7 +26,7 @@ export const signInController = async (req: Request, res: Response, next: NextFu
 		if (!validUser) {
 			return next(createHttpError(404, 'User not found'));
 		}
-		const validPassword = await compare(password, validUser.password);
+		const validPassword = compareSync(password, validUser.password);
 		if (!validPassword) {
 			return next(createHttpError(401, 'Invalid credentials'));
 		}
@@ -36,7 +36,7 @@ export const signInController = async (req: Request, res: Response, next: NextFu
 		res
 			.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
 			.status(200)
-			.json({ success: true, ...userWithoutPassword });
+			.json(userWithoutPassword);
 	} catch (error) {
 		next(error);
 	}
