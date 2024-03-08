@@ -16,7 +16,7 @@ export function Header() {
 						<li>About</li>
 					</Link>
 					<Link to="/sign-up ">
-						<li>Sign In</li>
+						<li>Sign Up</li>
 					</Link>
 				</ul>
 			</nav>

@@ -36,7 +36,7 @@ export const signInController = async (req: Request, res: Response, next: NextFu
 		res
 			.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
 			.status(200)
-			.json(userWithoutPassword);
+			.json({ success: true, ...userWithoutPassword });
 	} catch (error) {
 		next(error);
 	}

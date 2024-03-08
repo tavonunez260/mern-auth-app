@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { UserForm } from 'types';
+import { Link, useNavigate } from 'react-router-dom';
+import { SignUpForm } from 'types';
 import { rules } from 'utils';
 
 export function SignUp() {
@@ -10,11 +10,12 @@ export function SignUp() {
 		handleSubmit,
 		register,
 		reset
-	} = useForm<UserForm>();
+	} = useForm<SignUpForm>();
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
-	const onSubmit = async (requestData: UserForm) => {
+	const onSubmit = async (requestData: SignUpForm) => {
 		setLoading(true);
 		fetch(`/api/auth/signup`, {
 			body: JSON.stringify(requestData),
@@ -28,6 +29,8 @@ export function SignUp() {
 				if (!data.success) {
 					setError(data.message);
 					reset();
+				} else {
+					navigate('/sign-in');
 				}
 			})
 			.catch(() => setError('An unexpected error occurred'))
