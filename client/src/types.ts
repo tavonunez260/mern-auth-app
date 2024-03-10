@@ -18,7 +18,7 @@ export type AppError = {
 export type User = {
 	_id: string;
 	email: string;
-	photo: string | null;
+	profilePicture: string;
 	username: string;
 };
 
