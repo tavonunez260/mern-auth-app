@@ -7,11 +7,11 @@
     "skipLibCheck": true,
     "baseUrl": "./src",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
-      "@components/*": ["components/*"],
-      "@pages/*": ["pages/*"],
-      "@utils/*": ["utils/*"],
-      "@routes/*": ["routes/*"],
-      "@store/*": ["store/*"]
+      "components/*": ["components/*"],
+      "pages/*": ["pages/*"],
+      "utils/*": ["utils/*"],
+      "routes/*": ["routes/*"],
+      "store/*": ["store/*"]
     },
 
     /* Bundler mode */

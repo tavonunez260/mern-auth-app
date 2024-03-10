@@ -1,3 +1,4 @@
+import { OAuth } from 'components';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInFailure, signInStart, signInSuccess, useDispatch, useSelector } from 'store';
@@ -72,6 +73,7 @@ export function SignIn() {
 				>
 					{loading ? 'Loading ...' : 'Sign In'}
 				</button>
+				<OAuth />
 			</form>
 			<div className="flex gap-2 mt-5">
 				<p>Don&apos;`t have an account?</p>
