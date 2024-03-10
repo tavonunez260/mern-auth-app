@@ -2,7 +2,7 @@ import { OAuth } from 'components';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppError, SignUpForm } from 'types';
+import { AppError, SignUpForm } from '../types';
 import { rules } from 'utils';
 
 export function SignUp() {

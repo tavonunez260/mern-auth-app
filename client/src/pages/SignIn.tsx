@@ -2,7 +2,7 @@ import { OAuth } from 'components';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInFailure, signInStart, signInSuccess, useDispatch, useSelector } from 'store';
-import { AppError, SignInForm, User } from 'types';
+import { AppError, SignInForm, User } from '../types';
 import { rules } from 'utils';
 
 export function SignIn() {

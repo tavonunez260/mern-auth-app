@@ -2,7 +2,7 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'store';
-import { SignUpForm } from 'types';
+import { SignUpForm } from '../types';
 import { rules } from 'utils';
 
 import { app } from '../firebase';

@@ -1,4 +1,4 @@
-import { compareSync, genSalt, hash } from 'bcryptjs';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import { sign } from 'jsonwebtoken';
 
@@ -7,8 +7,8 @@ import { createHttpError } from 'utils';
 
 export const signUpController = async (req: Request, res: Response, next: NextFunction) => {
 	const { username, email, password } = req.body;
-	const salt = await genSalt(10);
-	const hashedPassword = await hash(password, salt);
+	const salt = genSaltSync(10);
+	const hashedPassword = hashSync(password, salt);
 	const newUser = new User({ username, email, password: hashedPassword });
 	try {
 		await newUser.save();
@@ -59,8 +59,8 @@ export const googleController = async (req: Request, res: Response, next: NextFu
 		} else {
 			const generatedPassword =
 				Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-			const salt = await genSalt(10);
-			const hashedPassword = await hash(generatedPassword, salt);
+			const salt = genSaltSync(10);
+			const hashedPassword = hashSync(generatedPassword, salt);
 
 			const newUser = new User({
 				username:
