@@ -1,9 +1,11 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 import { signInSuccess, useDispatch } from 'store';
 
 import { app } from '../firebase.ts';
 
 export function OAuth() {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const handleGoogleClick = async () => {
 		const provider = new GoogleAuthProvider();
@@ -22,7 +24,7 @@ export function OAuth() {
 		});
 		const data = await response.json();
 		dispatch(signInSuccess(data));
-		console.log(result);
+		navigate('/profile');
 	};
 	return (
 		<button
