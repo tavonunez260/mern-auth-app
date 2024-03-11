@@ -26,30 +26,31 @@ const runMongoose = async () => {
 		.then(() => console.log('Connected to MongoDB'))
 		.catch(() => console.log('Error'));
 };
-runMongoose().then();
-const clientPath = resolve(__dirname, '../../client/dist'); // Moves up from 'server/dist' to 'mern-auth-app' then into 'client/dist'
-app.use(expressStatic(clientPath));
-app.get('*', (req, res) => {
-	res.sendFile(join(clientPath, 'index.html'));
-});
-
-app.use(json());
-app.use(cookieParser());
-app.use(middleware);
-
-app.use('/api/user', userRouter);
-app.use('/api/auth', authRouter);
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-	const statusCode = err.statusCode ?? 500;
-	const message = err.message ?? 'Internal server error';
-
-	return res.status(statusCode).json({
-		success: false,
-		message: beautifyError(message),
-		...(err.data && { data: err.data })
+runMongoose().then(() => {
+	const clientPath = resolve(__dirname, '../../client/dist'); // Moves up from 'server/dist' to 'mern-auth-app' then into 'client/dist'
+	app.use(expressStatic(clientPath));
+	app.get('*', (req, res) => {
+		res.sendFile(join(clientPath, 'index.html'));
 	});
-});
 
-app.listen(4000);
+	app.use(json());
+	app.use(cookieParser());
+	app.use(middleware);
+
+	app.use('/api/user', userRouter);
+	app.use('/api/auth', authRouter);
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
+		const statusCode = err.statusCode ?? 500;
+		const message = err.message ?? 'Internal server error';
+
+		return res.status(statusCode).json({
+			success: false,
+			message: beautifyError(message),
+			...(err.data && { data: err.data })
+		});
+	});
+
+	app.listen(4000);
+});
