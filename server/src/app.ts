@@ -24,7 +24,7 @@ const runMongoose = async () => {
 	await mongoose
 		.connect(process.env.MONGO_URL ?? '')
 		.then(() => console.log('Connected to MongoDB'))
-		.catch(() => console.log('Error'));
+		.catch(error => console.log('Error', JSON.stringify(error)));
 };
 runMongoose().then(() => {
 	const clientPath = resolve(__dirname, '../../client/dist'); // Moves up from 'server/dist' to 'mern-auth-app' then into 'client/dist'
