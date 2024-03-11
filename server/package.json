@@ -20,6 +20,7 @@
     "express": "^4.18.3",
     "express-http-context": "^1.2.4",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.2.1",
     "prettier": "^3.2.5"
   },
@@ -41,5 +42,11 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
+  },
+  "_moduleAliases": {
+    "models": "./dist/models",
+    "controllers": "./dist/controllers",
+    "utils": "./dist/utils",
+    "routes": "./dist/routes"
   }
 }

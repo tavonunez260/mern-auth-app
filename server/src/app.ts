@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import express, {
@@ -10,12 +11,11 @@ import express, {
 } from 'express';
 import { middleware } from 'express-http-context';
 import mongoose from 'mongoose';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 import { authRouter, userRouter } from './routes';
 import { HttpError } from './types';
-
-import { beautifyError } from 'utils';
+import { beautifyError } from './utils';
 
 config();
 const app: Express = express();
@@ -24,11 +24,12 @@ mongoose
 	.connect(process.env.MONGO_URL ?? '')
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(() => console.log('Error'));
-
-app.use(expressStatic(join(__dirname, 'client', 'dist')));
+const clientPath = resolve(__dirname, '../../client/dist'); // Moves up from 'server/dist' to 'mern-auth-app' then into 'client/dist'
+app.use(expressStatic(clientPath));
 app.get('*', (req, res) => {
-	res.sendFile(join(__dirname, 'client', 'dist', 'index.html'));
+	res.sendFile(join(clientPath, 'index.html'));
 });
+
 app.use(json());
 app.use(cookieParser());
 app.use(middleware);
