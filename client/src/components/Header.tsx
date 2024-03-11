@@ -3,7 +3,7 @@ import { useSelector } from 'store';
 
 export function Header() {
 	const { currentUser } = useSelector(state => state.user);
-	console.log(currentUser);
+
 	return (
 		<header className="bg-slate-200">
 			<nav className="flex justify-between items-center max-w-6xl mx-auto p-3">

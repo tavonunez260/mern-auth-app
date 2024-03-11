@@ -1,11 +1,11 @@
 import react from '@vitejs/plugin-react-swc';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
 
 export default ({ mode }: { mode: string }) => {
 	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
 	return defineConfig({
-		plugins: [react()],
+		plugins: [react(), splitVendorChunkPlugin()],
 		resolve: {
 			alias: {
 				src: '/src',
@@ -26,6 +26,10 @@ export default ({ mode }: { mode: string }) => {
 					secure: false
 				}
 			}
+		},
+		build: {
+			outDir: 'dist',
+			sourcemap: false
 		}
 	});
 };
