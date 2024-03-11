@@ -10,7 +10,7 @@ import express, {
 } from 'express';
 import { middleware } from 'express-http-context';
 import mongoose from 'mongoose';
-import { join, resolve } from 'path';
+import { join } from 'path';
 
 import { authRouter, userRouter } from './routes';
 import { HttpError } from './types';
@@ -24,7 +24,6 @@ mongoose
 	.connect(process.env.MONGO_URL ?? '')
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(() => console.log('Error'));
-const __dirname = resolve();
 
 app.use(expressStatic(join(__dirname, 'client', 'dist')));
 app.get('*', (req, res) => {
