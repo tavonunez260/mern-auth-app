@@ -7,18 +7,29 @@ import {
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+import { modalReducer } from './modal';
+import { toastReducer } from './toast';
 import { userReducer } from './user';
 
 export * from './user';
-const rootReducer = combineReducers({ user: userReducer });
-const persistConfig = {
-	key: 'root',
+export * from './toast';
+export * from './modal';
+const userPersistConfig = {
+	key: 'user',
 	version: 1,
 	storage
 };
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+
+const rootReducer = combineReducers({
+	user: persistedUserReducer, // now user is persisted
+	toast: toastReducer,
+	modal: modalReducer
+});
+
 const store = configureStore({
-	reducer: persistedReducer,
+	reducer: rootReducer,
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware({
 			serializableCheck: false
@@ -27,7 +38,9 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
+
 const persistor = persistStore(store);
+
 const useDispatch = () => useAppDispatch<AppDispatch>();
 const useSelector: TypedUseSelectorHook<RootState> = useAppSelector;
 

@@ -15,7 +15,8 @@ export default ({ mode }: { mode: string }) => {
 				utils: '/src/utils',
 				store: '/src/store',
 				context: '/src/context',
-				firebaseConfig: '/src/firebaseConfig.ts'
+				firebaseConfig: '/src/firebaseConfig.ts',
+				types: '/src/types.d.ts'
 			}
 		},
 		server: {

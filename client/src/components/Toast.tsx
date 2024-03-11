@@ -1,31 +1,20 @@
 import { Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { useToast } from 'context';
-import { Fragment, useEffect, useState } from 'react';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { Fragment, useEffect } from 'react';
+import { setToast, useDispatch, useSelector } from 'store';
+import { PopUpTitle } from 'types';
 
 export function Toast() {
-	const { show, subtitle, title } = useToast();
-	const [defaultTitle, setDefaultTitle] = useState('');
-	const [defaultSubtitle, setDefaultSubtitle] = useState<string | undefined>(undefined);
-	const [defaultShow, setDefaultShow] = useState(false);
+	const { show, subtitle, type } = useSelector(state => state.toast);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			setDefaultShow(false);
+			dispatch(setToast(false));
 		}, 5000);
 		return () => clearTimeout(timer);
-	}, []);
-
-	useEffect(() => {
-		setDefaultTitle(title);
-	}, [title]);
-	useEffect(() => {
-		setDefaultSubtitle(subtitle);
-	}, [subtitle]);
-	useEffect(() => {
-		setDefaultShow(show);
-	}, [show]);
+	}, [dispatch]);
 
 	return (
 		<>
@@ -42,25 +31,28 @@ export function Toast() {
 						leave="transition ease-in duration-100"
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
-						show={defaultShow}
+						show={show}
 					>
 						<div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
 							<div className="p-4">
 								<div className="flex items-start">
 									<div className="flex-shrink-0">
-										<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
+										{type === PopUpTitle.SUCCESS && (
+											<CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" />
+										)}
+										{type === PopUpTitle.ERROR && (
+											<XCircleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
+										)}
 									</div>
 									<div className="ml-3 w-0 flex-1 pt-0.5">
-										<p className="text-sm font-medium text-gray-900">{defaultTitle}</p>
-										{defaultSubtitle && (
-											<p className="mt-1 text-sm text-gray-500">{defaultSubtitle}</p>
-										)}
+										<p className="text-sm font-medium text-gray-900">{type}</p>
+										{type && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
 									</div>
 									<div className="ml-4 flex flex-shrink-0">
 										<button
 											className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 											type="button"
-											onClick={() => setDefaultShow(false)}
+											onClick={() => dispatch(setToast(false))}
 										>
 											<span className="sr-only">Close</span>
 											<XMarkIcon aria-hidden="true" className="h-5 w-5" />

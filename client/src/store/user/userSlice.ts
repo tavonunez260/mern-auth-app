@@ -1,10 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-import { UserState } from '../../types';
+import { UserState } from 'types';
 
 const initialState: UserState = {
 	currentUser: null,
-	error: '',
 	loading: false
 };
 
@@ -18,11 +16,9 @@ const userSlice = createSlice({
 		signInSuccess: (state, action) => {
 			state.currentUser = action.payload;
 			state.loading = false;
-			state.error = '';
 		},
-		signInFailure: (state, action) => {
+		signInFailure: state => {
 			state.loading = false;
-			state.error = action.payload;
 		},
 		updateUserStart: state => {
 			state.loading = true;
@@ -30,16 +26,27 @@ const userSlice = createSlice({
 		updateUserSuccess: (state, action) => {
 			state.currentUser = action.payload;
 			state.loading = false;
-			state.error = '';
 		},
-		updateUserFailure: (state, action) => {
+		updateUserFailure: state => {
 			state.loading = false;
-			state.error = action.payload;
+		},
+		deleteUserStart: state => {
+			state.loading = true;
+		},
+		deleteUserSuccess: state => {
+			state.currentUser = null;
+			state.loading = false;
+		},
+		deleteUserFailure: state => {
+			state.loading = false;
 		}
 	}
 });
 
 export const {
+	deleteUserFailure,
+	deleteUserStart,
+	deleteUserSuccess,
 	signInFailure,
 	signInStart,
 	signInSuccess,

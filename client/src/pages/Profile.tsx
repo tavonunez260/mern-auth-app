@@ -1,27 +1,31 @@
-import { useToast } from 'context';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from 'firebaseConfig';
 import { isEqual } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+	deleteUserFailure,
+	deleteUserStart,
+	deleteUserSuccess,
+	hideModal,
+	showModal,
 	updateUserFailure,
 	updateUserStart,
 	updateUserSuccess,
 	useDispatch,
 	useSelector
 } from 'store';
-import { AppError, SignInForm, SignUpForm, User } from 'types';
+import { showToast } from 'store';
+import { AppError, SignInForm, SignUpForm, PopUpTitle, User } from 'types';
 import { rules } from 'utils';
 
 export function Profile() {
-	const { currentUser, error, loading } = useSelector(state => state.user);
+	const { currentUser, loading } = useSelector(state => state.user);
 	const dispatch = useDispatch();
 	const [image, setImage] = useState<File | undefined>(undefined);
 	const [imagePercentage, setImagePercentage] = useState(0);
 	const [imageError, setImageError] = useState('');
 	const [downloadURL, setDownloadURL] = useState('');
-	const { showToast } = useToast();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const {
 		formState: { errors },
@@ -88,20 +92,68 @@ export function Profile() {
 								})
 								.then((data: User) => {
 									dispatch(updateUserSuccess(data));
-									showToast('Success', 'Profile picture updated successfully');
+									dispatch(
+										showToast({
+											type: PopUpTitle.SUCCESS,
+											subtitle: 'Profile picture updated successfully'
+										})
+									);
 								})
 								.catch((error: AppError) => {
-									dispatch(updateUserFailure(error.message));
+									dispatch(updateUserFailure());
+									dispatch(
+										showToast({
+											type: PopUpTitle.ERROR,
+											subtitle: error.message
+										})
+									);
 								});
 						});
 					}
 				);
 			}
 		},
-		[currentUser?._id, dispatch, imageError, showToast]
+		[currentUser?._id, dispatch, imageError]
 	);
 
-	const onSubmit = useCallback(
+	const handleDelete = useCallback(() => {
+		dispatch(deleteUserStart());
+		fetch(`/api/user/delete/${currentUser?._id}`, {
+			method: 'DELETE',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			}
+		})
+			.then(response => {
+				if (!response.ok) {
+					return response.json().then(err => Promise.reject(err));
+				}
+				return response.json();
+			})
+			.then(data => {
+				dispatch(deleteUserSuccess(data));
+				dispatch(
+					showToast({
+						type: PopUpTitle.SUCCESS,
+						subtitle: 'User deleted successfully'
+					})
+				);
+				dispatch(hideModal());
+			})
+			.catch((error: AppError) => {
+				dispatch(deleteUserFailure());
+				dispatch(
+					showToast({
+						type: PopUpTitle.ERROR,
+						subtitle: error.message
+					})
+				);
+				dispatch(hideModal());
+			});
+	}, [currentUser?._id, dispatch]);
+
+	const handleSubmitForm = useCallback(
 		async (requestData: SignInForm) => {
 			dispatch(updateUserStart());
 			fetch(`/api/user/update/${currentUser?._id}`, {
@@ -120,14 +172,37 @@ export function Profile() {
 				})
 				.then((data: User) => {
 					dispatch(updateUserSuccess(data));
-					showToast('Success', 'User info updated successfully');
+					dispatch(
+						showToast({
+							type: PopUpTitle.SUCCESS,
+							subtitle: 'User info updated successfully'
+						})
+					);
 				})
 				.catch((error: AppError) => {
-					dispatch(updateUserFailure(error.message));
+					dispatch(updateUserFailure());
+					dispatch(
+						showToast({
+							type: PopUpTitle.ERROR,
+							subtitle: error.message
+						})
+					);
 				});
 		},
-		[currentUser?._id, dispatch, showToast]
+		[currentUser?._id, dispatch]
 	);
+
+	const handleDeleteClick = useCallback(() => {
+		dispatch(
+			showModal({
+				actionButton: 'Delete',
+				title: 'Delete account',
+				type: PopUpTitle.ERROR,
+				subtitle: 'Are you sure you want to delete your account? This cannot be undone',
+				handleClick: handleDelete
+			})
+		);
+	}, [dispatch, handleDelete]);
 
 	useEffect(() => {
 		if (image) {
@@ -138,7 +213,7 @@ export function Profile() {
 	return (
 		<main className="p-3 max-w-lg mx-auto">
 			<h1 className="text-3xl text-center font-semibold my-7">Profile</h1>
-			<form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit(onSubmit)}>
+			<form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit(handleSubmitForm)}>
 				<div className="flex flex-col">
 					<input
 						ref={inputRef}
@@ -213,7 +288,6 @@ export function Profile() {
 							</p>
 						))}
 				</div>
-				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				<button
 					className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 disabled:opacity-80 transition ease-in-out duration-200"
 					disabled={loading || !hasChanges}
@@ -223,7 +297,9 @@ export function Profile() {
 				</button>
 			</form>
 			<div className="flex justify-between mt-5">
-				<span className="text-red-700 cursor-pointer">Delete Account</span>
+				<span className="text-red-700 cursor-pointer" onClick={handleDeleteClick}>
+					Delete Account
+				</span>
 				<span className="text-red-700 cursor-pointer">Sign Out</span>
 			</div>
 		</main>

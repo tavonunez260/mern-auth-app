@@ -1,10 +1,10 @@
 import { OAuth } from 'components';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import { showToast, useDispatch } from 'store';
+import { AppError, SignUpForm, PopUpTitle } from 'types';
 import { rules } from 'utils';
-
-import { AppError, SignUpForm } from '../types';
 
 export function SignUp() {
 	const {
@@ -13,43 +13,57 @@ export function SignUp() {
 		register,
 		reset
 	} = useForm<SignUpForm>({ criteriaMode: 'all' });
-	const [error, setError] = useState<string | null>(null);
 	const [errorsState, setErrorsState] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
-	const onSubmit = async (requestData: SignUpForm) => {
-		setLoading(true);
-		fetch(`/api/auth/signup`, {
-			body: JSON.stringify(requestData),
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-			.then(response => {
-				if (!response.ok) {
-					return response.json().then(err => Promise.reject(err));
+	const handleFormSubmit = useCallback(
+		async (requestData: SignUpForm) => {
+			setLoading(true);
+			fetch(`/api/auth/signup`, {
+				body: JSON.stringify(requestData),
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
 				}
-				return response.json();
 			})
-			.then(() => {
-				navigate('/sign-in');
-			})
-			.catch((error: AppError) => {
-				reset();
-				setError(error.message);
-				if (error.errors) {
-					setErrorsState(Object.values(error.errors));
-				}
-				setLoading(false);
-			});
-	};
+				.then(response => {
+					if (!response.ok) {
+						return response.json().then(err => Promise.reject(err));
+					}
+					return response.json();
+				})
+				.then(data => {
+					dispatch(
+						showToast({
+							type: PopUpTitle.SUCCESS,
+							subtitle: data.message
+						})
+					);
+					navigate('/sign-in');
+				})
+				.catch((error: AppError) => {
+					reset();
+					dispatch(
+						showToast({
+							type: PopUpTitle.ERROR,
+							subtitle: error.message
+						})
+					);
+					if (error.errors) {
+						setErrorsState(Object.values(error.errors));
+					}
+					setLoading(false);
+				});
+		},
+		[dispatch, navigate, reset]
+	);
 
 	return (
 		<main className="p-3 max-w-lg mx-auto">
 			<h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
-			<form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit(onSubmit)}>
+			<form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit(handleFormSubmit)}>
 				<div className="flex flex-col">
 					<input
 						{...register('username', rules.name)}
@@ -95,7 +109,6 @@ export function SignUp() {
 							</p>
 						))}
 				</div>
-				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				{errorsState.length > 0 && (
 					<div className="flex flex-col">
 						{errorsState.map(error => (

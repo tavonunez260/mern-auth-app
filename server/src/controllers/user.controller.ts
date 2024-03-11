@@ -42,3 +42,17 @@ export const updateUserController = async (req: Request, res: Response, next: Ne
 		next(error);
 	}
 };
+
+export const deleteUserController = async (req: Request, res: Response, next: NextFunction) => {
+	const user = get('user');
+	if (user.id !== req.params.id) {
+		return next(createHttpError(401, 'User is allowed to delete only his account'));
+	}
+
+	try {
+		await User.findByIdAndDelete(req.params.id);
+		res.status(200).json({ message: 'User has been deleted' });
+	} catch (error) {
+		next(error);
+	}
+};

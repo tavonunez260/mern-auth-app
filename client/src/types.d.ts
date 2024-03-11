@@ -25,6 +25,22 @@ export type User = {
 
 export type UserState = {
 	currentUser: User | null;
-	error: string;
 	loading: boolean;
 };
+
+export enum PopUpTitle {
+	SUCCESS = 'Success',
+	ERROR = 'Error'
+}
+
+export type ToastState = {
+	show: boolean;
+	subtitle: string;
+	type: PopUpTitle | null;
+};
+
+export type ModalState = {
+	actionButton: string;
+	handleClick: () => void;
+	title: string;
+} & ToastState;

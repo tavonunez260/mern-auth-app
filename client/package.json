@@ -13,6 +13,7 @@
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@reduxjs/toolkit": "^2.2.1",
+    "clsx": "^2.1.0",
     "firebase": "^10.8.1",
     "heroicons": "^2.1.1",
     "lodash": "^4.17.21",
