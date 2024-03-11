@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpError } from '../types';
+import { HttpError } from 'types';
 
 export const validateUsername = (username: string, isRequired = true) => {
 	const errors = [];

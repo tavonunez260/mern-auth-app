@@ -2,9 +2,8 @@ import { genSaltSync, hashSync } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import { get } from 'express-http-context';
 
-import { UserType } from '../types';
-
 import { User } from 'models';
+import { UserType } from 'types';
 import { createHttpError } from 'utils';
 
 export const updateUserController = async (req: Request, res: Response, next: NextFunction) => {

@@ -20,10 +20,13 @@ import { beautifyError } from './utils';
 config();
 const app: Express = express();
 
-mongoose
-	.connect(process.env.MONGO_URL ?? '')
-	.then(() => console.log('Connected to MongoDB'))
-	.catch(() => console.log('Error'));
+const runMongoose = async () => {
+	await mongoose
+		.connect(process.env.MONGO_URL ?? '')
+		.then(() => console.log('Connected to MongoDB'))
+		.catch(() => console.log('Error'));
+};
+runMongoose().then();
 const clientPath = resolve(__dirname, '../../client/dist'); // Moves up from 'server/dist' to 'mern-auth-app' then into 'client/dist'
 app.use(expressStatic(clientPath));
 app.get('*', (req, res) => {

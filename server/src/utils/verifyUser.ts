@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { set } from 'express-http-context';
 import { JwtPayload, verify } from 'jsonwebtoken';
 
-import { createHttpError } from 'utils';
+import { createHttpError } from './error';
 
 export const verifyToken = (req: Request, response: Response, next: NextFunction) => {
 	const token = req.cookies.access_token;
