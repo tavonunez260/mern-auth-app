@@ -40,7 +40,8 @@ const userSlice = createSlice({
 		deleteUserFailure: state => {
 			state.loading = false;
 		},
-		signOut: () => initialState
+		// @ts-ignore
+		signOut: state => (state = initialState)
 	}
 });
 

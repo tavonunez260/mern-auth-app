@@ -206,8 +206,8 @@ export function Profile() {
 	}, [dispatch, handleDelete]);
 
 	const handleSignOut = useCallback(async () => {
-		fetch('/api/auth/signout', {
-			method: 'GET'
+		fetch(`/api/auth/signout/${currentUser?._id}`, {
+			method: 'POST'
 		})
 			.then(response => {
 				if (!response.ok) {
@@ -232,7 +232,7 @@ export function Profile() {
 					})
 				);
 			});
-	}, [dispatch]);
+	}, [currentUser?._id, dispatch]);
 
 	useEffect(() => {
 		if (image) {

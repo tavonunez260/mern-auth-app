@@ -28,7 +28,8 @@ const modalSlice = createSlice({
 				state = initialState;
 			}
 		},
-		hideModal: () => initialState
+		// @ts-ignore
+		hideModal: state => (state = initialState)
 	}
 });
 

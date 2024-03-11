@@ -16,7 +16,8 @@ const toastSlice = createSlice({
 			state.type = action.payload.type;
 			state.subtitle = action.payload.subtitle;
 		},
-		hideToast: () => initialState
+		// @ts-ignore
+		hideToast: state => (state = initialState)
 	}
 });
 

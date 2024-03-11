@@ -1,5 +1,6 @@
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
+import { get } from 'express-http-context';
 import { sign } from 'jsonwebtoken';
 
 import { User } from 'models';
@@ -85,5 +86,20 @@ export const googleController = async (req: Request, res: Response, next: NextFu
 };
 
 export const signOutController = async (req: Request, res: Response, next: NextFunction) => {
-	res.clearCookie('access_token').status(200).json({ message: 'User signed out successfully' });
+	const user = get('user');
+	if (user.id !== req.params.id) {
+		return next(createHttpError(401, 'User is allowed to delete only his account'));
+	}
+
+	try {
+		res
+			.set('Cache-Control', 'no-store')
+			.set('Pragma', 'no-cache')
+			.set('Expires', '0')
+			.clearCookie('access_token')
+			.status(200)
+			.json({ message: 'User signed out successfully' });
+	} catch (error) {
+		next(error);
+	}
 };
