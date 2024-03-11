@@ -1,8 +1,16 @@
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
-import express, { Express, json, NextFunction, Request, Response } from 'express';
+import express, {
+	Express,
+	json,
+	NextFunction,
+	static as expressStatic,
+	Request,
+	Response
+} from 'express';
 import { middleware } from 'express-http-context';
 import mongoose from 'mongoose';
+import { join, resolve } from 'path';
 
 import { authRouter, userRouter } from './routes';
 import { HttpError } from './types';
@@ -16,6 +24,12 @@ mongoose
 	.connect(process.env.MONGO_URL ?? '')
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(() => console.log('Error'));
+const __dirname = resolve();
+
+app.use(expressStatic(join(__dirname, 'client', 'dist')));
+app.get('*', (req, res) => {
+	res.sendFile(join(__dirname, 'client', 'dist', 'index.html'));
+});
 app.use(json());
 app.use(cookieParser());
 app.use(middleware);
