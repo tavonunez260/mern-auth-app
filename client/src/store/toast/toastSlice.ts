@@ -16,16 +16,10 @@ const toastSlice = createSlice({
 			state.type = action.payload.type;
 			state.subtitle = action.payload.subtitle;
 		},
-		setToast: (state, action) => {
-			state.show = action.payload;
-			if (!action.payload) {
-				state = initialState;
-			}
-		},
 		hideToast: () => initialState
 	}
 });
 
-export const { hideToast, setToast, showToast } = toastSlice.actions;
+export const { hideToast, showToast } = toastSlice.actions;
 
 export const toastReducer = toastSlice.reducer;

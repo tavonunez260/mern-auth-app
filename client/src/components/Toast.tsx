@@ -2,7 +2,7 @@ import { Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Fragment, useEffect } from 'react';
-import { setToast, useDispatch, useSelector } from 'store';
+import { hideToast, useDispatch, useSelector } from 'store';
 import { PopUpTitle } from 'types';
 
 export function Toast() {
@@ -10,11 +10,13 @@ export function Toast() {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			dispatch(setToast(false));
-		}, 5000);
-		return () => clearTimeout(timer);
-	}, [dispatch]);
+		if (show) {
+			const timer = setTimeout(() => {
+				dispatch(hideToast());
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [dispatch, show]);
 
 	return (
 		<>
@@ -52,7 +54,7 @@ export function Toast() {
 										<button
 											className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 											type="button"
-											onClick={() => dispatch(setToast(false))}
+											onClick={() => dispatch(hideToast())}
 										>
 											<span className="sr-only">Close</span>
 											<XMarkIcon aria-hidden="true" className="h-5 w-5" />

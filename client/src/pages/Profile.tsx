@@ -9,6 +9,7 @@ import {
 	deleteUserSuccess,
 	hideModal,
 	showModal,
+	signOut,
 	updateUserFailure,
 	updateUserStart,
 	updateUserSuccess,
@@ -204,6 +205,35 @@ export function Profile() {
 		);
 	}, [dispatch, handleDelete]);
 
+	const handleSignOut = useCallback(async () => {
+		fetch('/api/auth/signout', {
+			method: 'GET'
+		})
+			.then(response => {
+				if (!response.ok) {
+					return response.json().then(err => Promise.reject(err));
+				}
+				return response.json();
+			})
+			.then(data => {
+				dispatch(
+					showToast({
+						type: PopUpTitle.SUCCESS,
+						subtitle: data.message
+					})
+				);
+				dispatch(signOut());
+			})
+			.catch(error => {
+				dispatch(
+					showToast({
+						type: PopUpTitle.ERROR,
+						subtitle: error.message
+					})
+				);
+			});
+	}, [dispatch]);
+
 	useEffect(() => {
 		if (image) {
 			handleFileChange(image);
@@ -300,7 +330,9 @@ export function Profile() {
 				<span className="text-red-700 cursor-pointer" onClick={handleDeleteClick}>
 					Delete Account
 				</span>
-				<span className="text-red-700 cursor-pointer">Sign Out</span>
+				<span className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+					Sign Out
+				</span>
 			</div>
 		</main>
 	);
