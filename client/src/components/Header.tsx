@@ -15,9 +15,6 @@ export function Header() {
 					<Link to="/">
 						<li>Home</li>
 					</Link>
-					<Link to="/about">
-						<li>About</li>
-					</Link>
 					<Link to={currentUser ? '/profile' : '/sign-in'}>
 						{currentUser ? (
 							<li>

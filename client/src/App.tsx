@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { Header, Modal, PrivateRoute, Toast } from './components';
-import { About, Home, Profile, SignIn, SignUp } from './pages';
+import { Home, Profile, SignIn, SignUp } from './pages';
 
 function App() {
 	return (
@@ -9,7 +9,6 @@ function App() {
 			<Header />
 			<Routes>
 				<Route element={<Home />} path="/" />
-				<Route element={<About />} path="/about" />
 				<Route element={<PrivateRoute />}>
 					<Route element={<Profile />} path="/profile" />
 				</Route>
