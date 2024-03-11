@@ -13,7 +13,9 @@ export default ({ mode }: { mode: string }) => {
 				assets: '/src/assets',
 				pages: '/src/pages',
 				utils: '/src/utils',
-				store: '/src/store'
+				store: '/src/store',
+				context: '/src/context',
+				firebaseConfig: '/src/firebaseConfig.ts'
 			}
 		},
 		server: {

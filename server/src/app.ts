@@ -30,7 +30,8 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 
 	return res.status(statusCode).json({
 		success: false,
-		message: beautifyError(message)
+		message: beautifyError(message),
+		...(err.data && { data: err.data })
 	});
 });
 

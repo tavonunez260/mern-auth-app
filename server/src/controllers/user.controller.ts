@@ -7,12 +7,6 @@ import { UserType } from '../types';
 import { User } from 'models';
 import { createHttpError } from 'utils';
 
-export const userController = (req: Request, res: Response) => {
-	res.json({
-		message: 'API is working!'
-	});
-};
-
 export const updateUserController = async (req: Request, res: Response, next: NextFunction) => {
 	const user = get('user');
 	if (user.id !== req.params.id) {
@@ -44,5 +38,7 @@ export const updateUserController = async (req: Request, res: Response, next: Ne
 		} else {
 			res.status(200).json({ message: 'No update performed' });
 		}
-	} catch (error) {}
+	} catch (error) {
+		next(error);
+	}
 };

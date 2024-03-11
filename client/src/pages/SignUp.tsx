@@ -2,8 +2,9 @@ import { OAuth } from 'components';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppError, SignUpForm } from '../types';
 import { rules } from 'utils';
+
+import { AppError, SignUpForm } from '../types';
 
 export function SignUp() {
 	const {
@@ -11,8 +12,9 @@ export function SignUp() {
 		handleSubmit,
 		register,
 		reset
-	} = useForm<SignUpForm>();
+	} = useForm<SignUpForm>({ criteriaMode: 'all' });
 	const [error, setError] = useState<string | null>(null);
+	const [errorsState, setErrorsState] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
@@ -37,6 +39,9 @@ export function SignUp() {
 			.catch((error: AppError) => {
 				reset();
 				setError(error.message);
+				if (error.errors) {
+					setErrorsState(Object.values(error.errors));
+				}
 				setLoading(false);
 			});
 	};
@@ -53,9 +58,12 @@ export function SignUp() {
 						placeholder="User Name"
 						type="text"
 					/>
-					{errors.username && (
-						<p className="mt-2 text-sm text-red-600">{errors.username.message}</p>
-					)}
+					{errors.username &&
+						Object.values(errors.username.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				<div className="flex flex-col">
 					<input
@@ -65,7 +73,12 @@ export function SignUp() {
 						placeholder="Email"
 						type="email"
 					/>
-					{errors.email && <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>}
+					{errors.email &&
+						Object.values(errors.email.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				<div className="flex flex-col">
 					<input
@@ -75,11 +88,23 @@ export function SignUp() {
 						placeholder="Password"
 						type="password"
 					/>
-					{errors.password && (
-						<p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-					)}
+					{errors.password &&
+						Object.values(errors.password.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+				{errorsState.length > 0 && (
+					<div className="flex flex-col">
+						{errorsState.map(error => (
+							<p key={error} className="mt-2 text-sm text-red-600">
+								{error}
+							</p>
+						))}
+					</div>
+				)}
 				<button
 					className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 disabled:opacity-80 transition ease-in-out duration-200"
 					disabled={loading}

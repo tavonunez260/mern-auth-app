@@ -10,6 +10,7 @@ export type SignInForm = {
 };
 
 export type AppError = {
+	errors?: { [key: string]: string };
 	message: string;
 	statusCode: number;
 	success: boolean;

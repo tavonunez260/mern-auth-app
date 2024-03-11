@@ -2,8 +2,9 @@ import { OAuth } from 'components';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInFailure, signInStart, signInSuccess, useDispatch, useSelector } from 'store';
-import { AppError, SignInForm, User } from '../types';
 import { rules } from 'utils';
+
+import { AppError, SignInForm, User } from '../types';
 
 export function SignIn() {
 	const {
@@ -11,7 +12,7 @@ export function SignIn() {
 		handleSubmit,
 		register,
 		reset
-	} = useForm<SignInForm>();
+	} = useForm<SignInForm>({ criteriaMode: 'all' });
 	const navigate = useNavigate();
 	const { error, loading } = useSelector(state => state.user);
 	const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export function SignIn() {
 			})
 			.then((data: User) => {
 				dispatch(signInSuccess(data));
-				navigate('/');
+				navigate('/profile');
 			})
 			.catch((error: AppError) => {
 				reset();
@@ -54,7 +55,12 @@ export function SignIn() {
 						placeholder="Email"
 						type="email"
 					/>
-					{errors.email && <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>}
+					{errors.email &&
+						Object.values(errors.email.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				<div className="flex flex-col">
 					<input
@@ -64,6 +70,12 @@ export function SignIn() {
 						placeholder="Password"
 						type="password"
 					/>
+					{errors.password &&
+						Object.values(errors.password.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				<button

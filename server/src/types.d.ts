@@ -1,4 +1,5 @@
 export interface HttpError extends Error {
+	data?: { [key: string]: string[] };
 	statusCode: number;
 }
 

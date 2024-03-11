@@ -1,9 +1,8 @@
 import { Router } from 'express';
 
-import { updateUserController, userController } from 'controllers';
-import { verifyToken } from 'utils';
+import { updateUserController } from 'controllers';
+import { validateUpdate, verifyToken } from 'utils';
 
 export const userRouter = Router();
 
-userRouter.get('', userController);
-userRouter.post('/update/:id', verifyToken, updateUserController);
+userRouter.post('/update/:id', verifyToken, validateUpdate, updateUserController);

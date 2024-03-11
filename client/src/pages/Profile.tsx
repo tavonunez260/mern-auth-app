@@ -1,37 +1,54 @@
+import { useToast } from 'context';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { app } from 'firebaseConfig';
+import { isEqual } from 'lodash';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'store';
-import { SignUpForm } from '../types';
+import {
+	updateUserFailure,
+	updateUserStart,
+	updateUserSuccess,
+	useDispatch,
+	useSelector
+} from 'store';
+import { AppError, SignInForm, SignUpForm, User } from 'types';
 import { rules } from 'utils';
 
-import { app } from '../firebase';
-
 export function Profile() {
-	const { currentUser } = useSelector(state => state.user);
-	const [loading, setLoading] = useState(false);
+	const { currentUser, error, loading } = useSelector(state => state.user);
+	const dispatch = useDispatch();
 	const [image, setImage] = useState<File | undefined>(undefined);
 	const [imagePercentage, setImagePercentage] = useState(0);
 	const [imageError, setImageError] = useState('');
 	const [downloadURL, setDownloadURL] = useState('');
+	const { showToast } = useToast();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const {
 		formState: { errors },
 		handleSubmit,
 		register,
-		reset
+		watch
 	} = useForm<SignUpForm>({
-		defaultValues: { username: currentUser?.username, email: currentUser?.email }
+		defaultValues: { username: currentUser?.username, email: currentUser?.email },
+		criteriaMode: 'all'
 	});
+	const watchedUsername = watch('username');
+	const watchedEmail = watch('email');
 
-	const onSubmit = (requestData: SignUpForm) => {
-		setLoading(true);
-		console.log(requestData);
-		reset();
-		setLoading(false);
-	};
+	const hasChanges = useMemo(() => {
+		const formValues = {
+			username: watchedUsername,
+			email: watchedEmail
+		};
+		const initialValues = {
+			username: currentUser?.username,
+			email: currentUser?.email
+		};
+		return !isEqual(formValues, initialValues);
+	}, [currentUser?.email, currentUser?.username, watchedEmail, watchedUsername]);
+
 	const handleFileChange = useCallback(
-		async (image: File) => {
+		(image: File) => {
 			if (image.size > 2 * 1024 * 1024) {
 				setImageError('File size should not exceed 2MB');
 			} else {
@@ -52,14 +69,64 @@ export function Profile() {
 						setImageError(`Error uploading file ${error.message}`);
 					},
 					() => {
-						getDownloadURL(uploadTask.snapshot.ref).then(downloadURL =>
-							setDownloadURL(downloadURL)
-						);
+						getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+							setDownloadURL(downloadURL);
+							dispatch(updateUserStart());
+							fetch(`/api/user/update/${currentUser?._id}`, {
+								body: JSON.stringify({ profilePicture: downloadURL }),
+								method: 'POST',
+								headers: {
+									Accept: 'application/json',
+									'Content-Type': 'application/json'
+								}
+							})
+								.then(response => {
+									if (!response.ok) {
+										return response.json().then(err => Promise.reject(err));
+									}
+									return response.json();
+								})
+								.then((data: User) => {
+									dispatch(updateUserSuccess(data));
+									showToast('Success', 'Profile picture updated successfully');
+								})
+								.catch((error: AppError) => {
+									dispatch(updateUserFailure(error.message));
+								});
+						});
 					}
 				);
 			}
 		},
-		[imageError]
+		[currentUser?._id, dispatch, imageError, showToast]
+	);
+
+	const onSubmit = useCallback(
+		async (requestData: SignInForm) => {
+			dispatch(updateUserStart());
+			fetch(`/api/user/update/${currentUser?._id}`, {
+				body: JSON.stringify(requestData),
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				}
+			})
+				.then(response => {
+					if (!response.ok) {
+						return response.json().then(err => Promise.reject(err));
+					}
+					return response.json();
+				})
+				.then((data: User) => {
+					dispatch(updateUserSuccess(data));
+					showToast('Success', 'User info updated successfully');
+				})
+				.catch((error: AppError) => {
+					dispatch(updateUserFailure(error.message));
+				});
+		},
+		[currentUser?._id, dispatch, showToast]
 	);
 
 	useEffect(() => {
@@ -72,26 +139,28 @@ export function Profile() {
 		<main className="p-3 max-w-lg mx-auto">
 			<h1 className="text-3xl text-center font-semibold my-7">Profile</h1>
 			<form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit(onSubmit)}>
-				<input
-					ref={inputRef}
-					accept="image/*"
-					hidden
-					type="file"
-					onChange={event => setImage(event.target.files?.[0])}
-				/>
-				<img
-					alt={`${currentUser?.username} profile photo`}
-					className="w-24 h-24 mt-2 self-center cursor-pointer rounded-full object-cover"
-					src={downloadURL || currentUser?.profilePicture}
-					onClick={() => inputRef?.current?.click()}
-				/>
-				{imageError && <p className="mt-2 text-sm text-red-600">{imageError}</p>}
-				{imagePercentage > 0 && imagePercentage <= 99 && (
-					<p className="mt-2 text-sm self-center text-slate-700">Uploading: {imagePercentage}%</p>
-				)}
-				{imagePercentage === 100 && (
-					<p className="mt-2 text-sm self-center text-green-700">Upload complete!</p>
-				)}
+				<div className="flex flex-col">
+					<input
+						ref={inputRef}
+						accept="image/*"
+						hidden
+						type="file"
+						onChange={event => setImage(event.target.files?.[0])}
+					/>
+					<img
+						alt={`${currentUser?.username} profile photo`}
+						className="w-24 h-24 mt-2 self-center cursor-pointer rounded-full object-cover"
+						src={downloadURL || currentUser?.profilePicture}
+						onClick={() => inputRef?.current?.click()}
+					/>
+					{imageError && <p className="mt-2 text-sm text-red-600">{imageError}</p>}
+					{imagePercentage > 0 && imagePercentage <= 99 && (
+						<p className="mt-2 text-sm self-center text-slate-700">Uploading: {imagePercentage}%</p>
+					)}
+					{imagePercentage === 100 && (
+						<p className="mt-2 text-sm self-center text-green-700">Upload complete!</p>
+					)}
+				</div>
 				<div className="flex flex-col">
 					<input
 						{...register('username', {
@@ -103,9 +172,12 @@ export function Profile() {
 						placeholder="User Name"
 						type="text"
 					/>
-					{errors.username && (
-						<p className="mt-2 text-sm text-red-600">{errors.username.message}</p>
-					)}
+					{errors.username &&
+						Object.values(errors.username.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				<div className="flex flex-col">
 					<input
@@ -115,7 +187,12 @@ export function Profile() {
 						placeholder="Email"
 						type="email"
 					/>
-					{errors.email && <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>}
+					{errors.email &&
+						Object.values(errors.email.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
 				<div className="flex flex-col">
 					<input
@@ -129,13 +206,17 @@ export function Profile() {
 						placeholder="Password"
 						type="password"
 					/>
-					{errors.password && (
-						<p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-					)}
+					{errors.password &&
+						Object.values(errors.password.types || {}).map((message, index) => (
+							<p key={index} className="mt-2 text-sm text-red-600">
+								{message as string}
+							</p>
+						))}
 				</div>
+				{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				<button
 					className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 disabled:opacity-80 transition ease-in-out duration-200"
-					disabled={loading}
+					disabled={loading || !hasChanges}
 					type="submit"
 				>
 					{loading ? 'Loading ...' : 'Update'}
